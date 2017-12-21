@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TriviaGame</title>
+    <!-- Link to Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Link to my style sheet -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Link to the jQuery Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Link to my javascript -->
+    <script src="assets/javascript/app.js"></script>
+</head>
+
+<body>
+    <!-- Jumbotron for Title -->
+    <div class="jumbotron">
+        <h1 class="text-center">Trivia!</h1>
+        <h3 class="text-center">Answer the questions within the allotted time</h3>
+    </div>
+    <!-- End Jumbotron -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Instructions Panel -->
+            <div class="col-lg-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Instructions</div>
+                    <div class="panel-body">
+                        <p>You will be given a random number at the start of the game.</p>
+                        <p>There are four crystals below. By clicking on a crystal you will add a specific amount of points to your total score.</p>
+                        <p>You win the game by matching your total score to the random number; you lose the game if your total score goes above the random number.</p>
+                        <p>The value of each crystal is hidden from you until you click on it.</p>
+                        <p>Each time when the game starts, the game will change the values of each crystal.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- End of Instructions Panel -->
+            <!-- Crystals -->
+            <div class="col-lg-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Click Crystals for Hidden Score</div>
+                    <div class="panel-body">
+                        <div class="row" id="bs-test">
+                            <!--<div class="col-lg-12">-->
+                            <!-- Add empty div to hold crystal <img> elements. We will fill it dynamically using jQuery-->
+                            <!--<div id="crystals"></div>-->
+                            <!--</div>-->
+                        </div>
+
+
+                        <!-- Gameboard -->
+                        <div id="gameBoard">
+
+                        <!-- Temporarily layout all the elements here that the js will later create and destroy per screen -->
+                        
+                        <!-- for the waitToStart page -->
+                        
+                        <!-- ==need a start button-->
+                        <button id='start' type='button' class='btn btn-primary btn-lg btn-block'>Start Game</button>
+                        
+                        <!-- for the waitForAnswer page -->
+
+                        <!-- ==need a place to put the timer-->
+                        <button id='timer' type='button' class='btn btn-primary btn-lg btn-block'>Time Remaining: 0:30</button>
+                        
+                        <!-- need a place to put the question (no handler) -->
+                        <button id='question' type='button' class='btn btn-primary btn-lg btn-block'>Question/(R/W/Expired)/Score</button>
+                        
+                        <!-- need four answer buttons that can all be selected with same class -->
+                        <div class="btn-group-vertical btn-primary btn-block" role="group" aria-label="Basic example">
+                            <button type='button' class='answer btn btn-primary btn-lg btn-block' data-answer-num='1'>Answer 1</button>
+                            <button type='button' class='answer btn btn-primary btn-lg btn-block' data-answer-num='2'>Answer 2</button>
+                            <button type='button' class='answer btn btn-primary btn-lg btn-block' data-answer-num='3'>Answer 3</button>
+                            <button type='button' class='answer btn btn-primary btn-lg btn-block' data-answer-num='4'>Answer 4</button>
+                        </div>
+
+                    </div>
+                    <!-- end gameBoard -->
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- End of Crystals -->
+            <div class="col-lg-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Scoreboard</div>
+                    <div class="panel-body">
+                        <div>
+                            <h2>Wins</h2>
+                        </div>
+                        <div id="wins-count">0</div>
+                        <div>
+                            <h2>Losses</h2>
+                        </div>
+                        <div id="losses-count">0</div>
+                        <div>
+                            <h2 id="win-lose">You Lose!</h2>
+                            <h3 id="play-again"></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- closes the 1st row in this container -->
+    </div>
+    <!-- closes the container div -->
+    <!--<img src="assets/images/x-purple-200x200.jpg">-->
+    <!--Requirements-->
+    <!-- ===========================================
+Here's how the app works:
+
+There will be four crystals displayed as buttons on the page.
+
+The player will be shown a random number at the start of the game.
+
+When the player clicks on a crystal, it will add a specific amount of points to the player's total score.
+
+Your game will hide this amount until the player clicks a crystal.
+When they do click one, update the player's score counter.
+The player wins if their total score matches the random number from the beginning of the game.
+
+The player loses if their score goes above the random number.
+
+The game restarts whenever the player wins or loses.
+
+When the game begins again, the player should see a new random number. Also, all the crystals will have four new hidden values. Of course, the user's score (and score counter) will reset to zero.
+The app should show the number of games the player wins and loses. To that end, do not refresh the page as a means to restart the game.
+
+Option 1 Game design notes
+The random number shown at the start of the game should be between 19 - 120.
+
+Each crystal should have a random hidden value between 1 - 12.
+
+Psuedo Code
+0. initialize session state (multiple games can be played per session, wins and losses persist over session, not reset at gameOver)
+0.1. init wins and losses
+0.2. call initGame
+1. initialize game state (using initGame function)
+  1.1. Get random number for target, four crystals
+  1.2. Dynamically create 4 image elements for crystals
+  1.2.1. while creating img elements, style them and give them data attributes to hold their random number values
+  1.2.2. add the img elements to the page
+  1.3. initialize game state display (initGame calls updateDisplay) (displays number-to-guess, running-total, winCount and lossCount)
+
+2. Declare onclick function that fires for any crystal, but gets data value for specific clicked crystal
+  2.1. Add crystal data val to playerSum (must parseInt first)
+  2.2. Check to see if player won, check to see if player lost. Keep a "gameOver" state variable
+  2.3. If player won or lost, update count of wins and losses 
+    2.3.1. If player has won or lost, set gameOver true
+  2.4. Regardles of whether player has won or lost or not, update the display
+  2.5 Exit clock function. 
+    2.5.1, If gameOver false, keep playing
+    2.5.2. If gameOver true, require some user action to start new game (using initGame function)
+
+================================================ -->
+    <!-- JAVASCRIPT  -->
+    <!-- ========================================= -->
+</body>
+
+</html>
