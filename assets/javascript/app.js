@@ -72,8 +72,8 @@
         function initGame() {
             console.log("initGame was called");
 
-            //probably need to empty the gameBoard 
-            //$("#gameBoard").empty();
+            //Empty gameBoard div to clear Center Panel
+            $("#gameBoard").empty();
 
             //reset answer counts
             correctAnsCount = 0;
