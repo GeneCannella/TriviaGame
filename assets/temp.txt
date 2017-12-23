@@ -1,0 +1,7 @@
+[
+“Which founding father is known for his large signature on the United States Declaration of Independence?”,
+“John Hancock”,
+“George Washington”,
+“John Adams”,
+“Thomas Jefferson”,
+],
