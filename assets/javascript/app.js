@@ -1,14 +1,19 @@
     $(document).ready(function() {
 
+        //declare game constants
+        var ALLOTTED_TIME = 15;
+        var questionsPerGame = 5;
+
         //declare global variables to hold session state
         var indexOfQuestion; //will hold a random number that is used to look into the questionsArray and get one Question
 
-        var questionsPerGame; //will hold the setting for number of questions asked before game ends
         var questionsAsked; //will hold the running count of questions asked in one game
 
         var correctAnsCount, incorrectAnsCount, unansweredCount;
 
-        var timesUpVar; //id for timer that will be created in waitForAnswer function
+        //var timesUpVar; //id for timer that will be created in waitForAnswer function
+        var oneSecInterval; //id for timer that will be created in waitForAnswer function
+        var timeAllotted; //will hold count value while waiting for player to answer
 
         //lets make the set of answers an array of answer objects
         var questionsArray = [
@@ -25,6 +30,34 @@
         //....declare a function each game progress state (waitToStart, waitForAnswer, displayAnswer, displaySessionStats)
         //....each state function will register a click handler and/or a timeout callback
         //....each state will also destroy all other handlers and callbacks so it's callback is the only one that can occur
+
+        //helper functions ==========================================
+
+        function countDown() {
+            timeAllotted--
+            console.log("timeAllotted =", timeAllotted);
+            $("#time-remaining").text("Time Remaining: " + timeAllotted);
+
+            if (timeAllotted === 0) {
+                displayAnswer("timeout");
+            }
+            return;
+        }
+
+        function nextStateFunc(a, b) {
+            console.log("nextStateFunc was called");
+            var x = a; //placeholder for testing
+            var y = b; //placeholder for testing
+            console.log("y = " + y);
+            if (questionsAsked >= questionsPerGame) {
+                displaySessionStats();
+            } else {
+                waitForAnswer();
+            }
+            return;
+        }
+
+        //game state functions=======================================
 
         function initSession() {
 
@@ -47,11 +80,10 @@
             incorrectAnsCount = 0;
             unansweredCount = 0;
 
-            questionsPerGame = 5;
+
             questionsAsked = 0;
 
             waitToStart();
-
         }
 
         function waitToStart() {
@@ -73,7 +105,6 @@
             console.log(a);
             console.log("waitForAnswer click handler registered");
             return;
-
         }
 
         function waitForAnswer() {
@@ -111,8 +142,16 @@
 
             //========================== end of "do stuff" ============================================================
 
+            timeAllotted = ALLOTTED_TIME; //set the time remaining to the full time allowed
+
+            //Display a message indicating the remaining time
+            var timeRemainingBtnHTML =
+                "<button id='time-remaining' type='button' class='btn btn-primary btn-lg btn-block'>" +
+                "Time Remaining: " + timeAllotted + "</button>";
+            $("#gameBoard").prepend(timeRemainingBtnHTML);
+
             //start a timer that limits how long the player has to answer
-            timesUpVar = setTimeout(function() { displayAnswer("timeout"); }, 10000);
+            oneSecInterval = setInterval(countDown, 1000);
 
 
             //display time remaining
@@ -121,33 +160,26 @@
             //if incorrectly answered, set correct false and return
             //return to main - do not call next state function
 
+            //register the click handler for player answering the question
             $(".answer").on("click", displayAnswer);
             console.log("displayAnswer click handler registered");
-            return;
 
-        } //closes waitForAnswer, I think
-
-
-        function nextStateFunc(a, b) {
-            console.log("nextStateFunc was called");
-            var x = a; //placeholder for testing
-            var y = b; //placeholder for testing
-            console.log("y = " + y);
-            if (questionsAsked >= questionsPerGame) {
-                displaySessionStats();
-            } else {
-                waitForAnswer();
-            }
             return;
         }
 
         function displayAnswer(callingEvent) {
             console.log("displayAnswer was called");
             console.log("xxxxxxxxxxxxxxxxxxxxxxxx");
+
             //immediately clear the timeout created in the waitForAnswer function
             //that prevents displayAnswer being called by the timeout if the user answers in time
-            clearTimeout(timesUpVar);
-            console.log("timesUpVar timeout has been cleared");
+
+            clearInterval(oneSecInterval);
+            console.log("oneSecInterval timer has been cleared");
+
+            //clearTimeout(timesUpVar);
+            //console.log("timesUpVar timeout has been cleared");
+
             console.log("callingEvent = ", callingEvent);
 
             //empty the gameBoard div
@@ -188,7 +220,7 @@
                     incorrectAnsCount++;
                 }
                 //==============================================================
-            
+
             } else {
                 //IF TIMEOUT EVENT THEN DO THIS
                 //==============================================================
@@ -203,7 +235,7 @@
                 unansweredCount++;
             }
 
-                //==============================================================
+            //==============================================================
 
             //display a right or wrong message in gameBoard div (don't actually need the id "result" so far)
             var resultBtnHTML = "<button id='result' type='button' class='btn btn-primary btn-lg btn-block'>" + resultStr + "</button>";
@@ -255,34 +287,10 @@
 
 
             return; //return from displaySessionStats
-
         }
 
-        //while waiting for answer
-        //set userAnswered = false
-        //register click handlers for answer buttons
-        //click handlers pass "userAnswered = true" param to "displayAnswer"
-        //register timeout for no answer case
-        //timeout passes param "userAnswered = true" to "displayAnswer"
-        //displayAnswer must immediately clear timeout 
-        //display answer uses userAnswered to 
-
-        //to minimize race problem
-        //have both timeout and click call a function that:
-        //clears the timer and sets the answered bool
-        //that way if user clicks just before timeout, but somehow timeout calls its function before getting cleared
-        //then it will behave , but as though user ran out of time
-        //DOESN'T WORK
-
-
-
-
-        //end global function declarations =============================
+        //end game state function declarations =============================
 
         initGame();
-
-
-
-
 
     }); //closes the document ready function
