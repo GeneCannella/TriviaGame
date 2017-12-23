@@ -8,6 +8,7 @@
 
         var correctAnsCount, incorrectAnsCount, unansweredCount;
 
+        var timesUpVar; //id for timer that will be created in waitForAnswer function
 
         //lets make the set of answers an array of answer objects
         var questionsArray = [
@@ -50,7 +51,7 @@
             questionsAsked = 0;
 
             waitToStart();
-            
+
         }
 
         function waitToStart() {
@@ -68,7 +69,8 @@
 
             // register a click handler to the start button 
             // clicking will move player to Q&A screen
-            $("#start").on("click", waitForAnswer);
+            var a = $("#start").on("click", waitForAnswer);
+            console.log(a);
             console.log("waitForAnswer click handler registered");
             return;
 
@@ -109,7 +111,10 @@
 
             //========================== end of "do stuff" ============================================================
 
-            //start a counter
+            //start a timer that limits how long the player has to answer
+            timesUpVar = setTimeout(function() { displayAnswer("timeout"); }, 10000);
+
+
             //display time remaining
             //if time runs out, set unanswered true and return
             //if correctly answered, set correct true and return
@@ -136,30 +141,69 @@
             return;
         }
 
-        function displayAnswer() {
+        function displayAnswer(callingEvent) {
             console.log("displayAnswer was called");
+            console.log("xxxxxxxxxxxxxxxxxxxxxxxx");
+            //immediately clear the timeout created in the waitForAnswer function
+            //that prevents displayAnswer being called by the timeout if the user answers in time
+            clearTimeout(timesUpVar);
+            console.log("timesUpVar timeout has been cleared");
+            console.log("callingEvent = ", callingEvent);
+
             //empty the gameBoard div
             $("#gameBoard").empty();
 
-            //get the number of the choice made by the user
-            var clickedAnswerStr = $(this).attr("data-choice-num");
-            console.log("clickedAnswerStr = " + clickedAnswerStr + " " + typeof clickedAnswerStr);
-
-            //check if user choice is correct
-            var resultStr;
+            //Get the correct answer from the questionsArray
             var indexOfAnswerStr = questionsArray[indexOfQuestion][5];
-            if (clickedAnswerStr == indexOfAnswerStr) {
-                //set the text that will be displayed to indicate to user their choice was correct
-                resultStr = "Correct!";
-                //increment correct answers counter
-                correctAnsCount++;
 
+            //Check to see if we entered this function via a click or a timeout
+            //the timeout will pass the string "timeout" as a parameter to this displayAnswer function
+            //but the click function will pass the event object
+            //so we can just check for the "timeout" string
+            if (callingEvent != "timeout") {
+                // IF CLICK EVENT THEN DO THIS
+                //=============================================================
+                //Do this section of code only if we got here via a click event
+
+                //get the number of the choice made by the user
+                //Note: in this context, "this" is the raw element that was clicked
+                //because the displayAnswer function we are in is the callback for the click event
+                //So..."this" is not a jQuery object
+
+                var clickedAnswerStr = $(this).attr("data-choice-num"); //
+                console.log("clickedAnswerStr = " + clickedAnswerStr + " " + typeof clickedAnswerStr);
+
+                //check if user choice is correct
+                var resultStr;
+                if (clickedAnswerStr == indexOfAnswerStr) {
+                    //set the text that will be displayed to indicate to user their choice was CORRECT
+                    resultStr = "Correct!";
+                    //increment correct answers counter
+                    correctAnsCount++;
+
+                } else {
+                    //set the text that will be displayed to indicate to user their choice was INCORRECT
+                    resultStr = "Incorrect!";
+                    //increment incorrect answers counter 
+                    incorrectAnsCount++;
+                }
+                //==============================================================
+            
             } else {
-                //set the text that will be displayed to indicate to user their choice was INcorrect
-                resultStr = "Incorrect!";
-                //increment incorrect answers counter 
-                incorrectAnsCount++; //need to handle unansweredCount
+                //IF TIMEOUT EVENT THEN DO THIS
+                //==============================================================
+                //Do this section of code only if we got here via a timeout event
+
+                //Set resultStr = "Time's Up!"
+                //increment unansweredCount
+
+                //set the text that will be displayed to indicate to user they did not answer in time
+                resultStr = "Time's Up!";
+                //increment the count of unanswered questions 
+                unansweredCount++;
             }
+
+                //==============================================================
 
             //display a right or wrong message in gameBoard div (don't actually need the id "result" so far)
             var resultBtnHTML = "<button id='result' type='button' class='btn btn-primary btn-lg btn-block'>" + resultStr + "</button>";
@@ -175,7 +219,7 @@
             //when timer expire call waitForAnswer if more questions, call displaySessionStats if no more questions
 
             // example from w3Schls : myVar = setTimeout(function(){ alertFunc("First param", "Second param"); }, 2000);
-            timerVar = setTimeout(function() { nextStateFunc("First param", "Second param"); }, 1000);
+            timerVar = setTimeout(function() { nextStateFunc("First param", "Second param"); }, 2000);
 
             //return to main 
             return;
@@ -186,7 +230,7 @@
 
             //empty the gameBoard div
             $("#gameBoard").empty();
-            
+
             //display correctAnsCount, incorrectAnsCount, unansweredCount in console for testing 
             console.log(correctAnsCount, incorrectAnsCount, unansweredCount);
 
@@ -205,17 +249,30 @@
             //display a "play again" button in gameBoard div
             var playAgainBtnHTML = "<button type='button' id='play-again' class='btn btn-primary btn-lg btn-block'>Play Again</button>";
             $("#gameBoard").append(playAgainBtnHTML);
-          
+
             $("#play-again").on("click", initGame);
             console.log("Play Again click handler registered");
-            
+
 
             return; //return from displaySessionStats
 
         }
 
+        //while waiting for answer
+        //set userAnswered = false
+        //register click handlers for answer buttons
+        //click handlers pass "userAnswered = true" param to "displayAnswer"
+        //register timeout for no answer case
+        //timeout passes param "userAnswered = true" to "displayAnswer"
+        //displayAnswer must immediately clear timeout 
+        //display answer uses userAnswered to 
 
-
+        //to minimize race problem
+        //have both timeout and click call a function that:
+        //clears the timer and sets the answered bool
+        //that way if user clicks just before timeout, but somehow timeout calls its function before getting cleared
+        //then it will behave , but as though user ran out of time
+        //DOESN'T WORK
 
 
 
