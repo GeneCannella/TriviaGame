@@ -15,54 +15,7 @@
         var oneSecInterval; //id for timer that will be created in waitForAnswer function
         var timeAllotted; //will hold count value while waiting for player to answer
 
-        //lets make the set of answers an array of answer objects
-        var questionsArray = [
-            [
-            "Which founding father is known for his large signature on the United States Declaration of Independence?",
-            "Thomas Jefferson",
-            "George Washington",
-            "John Hancock",
-            "John Adams",
-            "3"
-            ],
-
-            [
-            "What was the name of the U.S. mail service, started in 1860, that used horses and riders?",
-            "Pony Express",
-            "Rider Mail",
-            "Fast Mail",
-            "U.S. Mail",
-            "1",
-            ],
-
-            [
-            "Who was the first US President to declare war?",
-            "Harry Truman",
-            "Richard Nixon",
-            "James Madison",
-            "John F. Kennedy",
-            "3",
-            ],
-
-            [
-            "Who assassinated President Abraham Lincoln?",
-            "John Wilkes Booth",
-            "Lee Harvey Oswald",
-            "James Earl Ray",
-            "Leon Czolgosz",
-            "1",
-            ],
-
-            [
-            "New York City was originally known by which Dutch name?",
-            "Cannes",
-            "Nieuw Amsterdam",
-            "Rouen",
-            "Biarritz",
-            "2",
-            ],
-
-        ];
+        //previously put questionsArray here, got too big, moved to separate file ("assets/javascript/questions.js")
 
         console.log(questionsArray);
 
@@ -116,6 +69,7 @@
 
             //Empty gameBoard div to clear Center Panel
             $("#gameBoard").empty();
+            $("#time-remaining").text("Time Remaining: ");
 
             //reset answer counts
             correctAnsCount = 0;
@@ -161,6 +115,8 @@
 
             //empty the gameBoard div
             $("#gameBoard").empty();
+            //empty the clockBoard div
+            //$("#clockBoard").empty();
 
             //Get a random question from the questionsArray by first getting a random number to use as index
             indexOfQuestion = Math.floor(Math.random() * questionsArray.length);
@@ -170,7 +126,11 @@
             console.log("questionStr = " + questionStr);
 
             //display a question in the gameBoard div (don't actually need the id attr so far)
-            var questionBtnHTML = "<button id='question' type='button' class='btn btn-primary btn-lg btn-block'>" + questionStr + "</button>";
+            var questionBtnHTML =
+                "<button id='question' type='button' class='btn btn-primary btn-lg btn-block text-left'>" +
+                questionStr +
+                "</button>";
+
             $("#gameBoard").append(questionBtnHTML);
 
             //display multiple choice buttons in gameBoard div
@@ -188,9 +148,11 @@
 
             //Display a message indicating the remaining time
             var timeRemainingBtnHTML =
-                "<button id='time-remaining' type='button' class='btn btn-primary btn-lg btn-block'>" +
+                "<button id='time-remaining' type='button' class='btn btn-primary btn-lg btn-block text-left'>" +
                 "Time Remaining: " + timeAllotted + "</button>";
-            $("#gameBoard").prepend(timeRemainingBtnHTML);
+            
+            //$("#clockBoard").append(timeRemainingBtnHTML);
+            $("#time-remaining").text("Time Remaining: " + timeAllotted);
 
             //start a timer that limits how long the player has to answer
             oneSecInterval = setInterval(countDown, 1000);
@@ -280,13 +242,23 @@
             //==============================================================
 
             //display a right or wrong message in gameBoard div (don't actually need the id "result" so far)
-            var resultBtnHTML = "<button id='result' type='button' class='btn btn-primary btn-lg btn-block'>" + resultStr + "</button>";
+            var resultBtnHTML = 
+            "<button id='result' type='button' class='btn btn-primary btn-lg btn-block'>" +
+            resultStr + 
+            "</button>";
+
             $("#gameBoard").append(resultBtnHTML);
 
             //display the correct answer message in gameBoard div
             var correctAnswer = questionsArray[indexOfQuestion][parseInt(indexOfAnswerStr)];
             console.log("correctAnswer = " + correctAnswer);
-            var correctAnswerBtnHTML = "<button type='button' class='btn btn-primary btn-lg btn-block'>" + correctAnswer + "</button>";
+
+            var correctAnswerBtnHTML = 
+            "<button type='button' class='btn btn-primary btn-lg btn-block'>" +
+            "Correct Answer was: " + 
+            correctAnswer + 
+            "</button>";
+
             $("#gameBoard").append(correctAnswerBtnHTML);
 
             //start a counter, but do not display time remaining
